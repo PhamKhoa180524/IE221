@@ -1,0 +1,17 @@
+{% extends 'hotel/base.html' %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Xác nhận xóa đặt dịch vụ</h1>
+        <p>Bạn có chắc chắn muốn xóa dịch vụ này không?</p>
+        <p>Dịch vụ: {{ booking.service.service_name }}</p>
+        <p>>Thời gian đặt: {{ booking.time_call }}</p>
+        <p>Số lượng:{{ booking.quantity }}</p>
+        <p>Tổng tiền: {{ booking.total_price }} VND</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+            <a href="{% url 'hotel:service_history' %}" class="btn btn-secondary">Hủy</a>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'hotel/base.html' %}
+
+{% load static %}
+
+{% block title %}Trang chủ{% endblock title %}
+
+{% block body %}
+
+<div class="container text-center mt-5">
+    <h2>Chào mừng bạn đến với hệ thống quản lý khách sạn</h2>
+    <p class="lead">Cung cấp công cụ tối ưu để quản lý khách sạn của bạn một cách dễ dàng và nhanh chóng.</p>
+</div>
+
+<div class="container mt-5">
+    <h3 class="text-center mb-4">Tiện Ích Nổi Bật</h3>
+    <div class="row text-center">
+        <div class="col-md-3">
+            <img src="{% static 'hotel/images/hoboi.jpg' %}" class="rounded mb-3" alt="Hồ Bơi">
+            <h5>Hồ Bơi Cao Cấp</h5>
+            <p>Thư giãn cùng hồ bơi ngoài trời tuyệt đẹp.</p>
+        </div>
+        <div class="col-md-3">
+            <img src="{% static 'hotel/images/nhahang.jpg' %}" class="rounded mb-3" alt="Nhà Hàng">
+            <h5>Nhà Hàng Ẩm Thực</h5>
+            <p>Thưởng thức món ăn đẳng cấp thế giới.</p>
+        </div>
+        <div class="col-md-3">
+            <img src="{% static 'hotel/images/spa.webp' %}" class="rounded mb-3" alt="Spa">
+            <h5>Spa Thư Giãn</h5>
+            <p>Trải nghiệm dịch vụ chăm sóc spa chuyên nghiệp.</p>
+        </div>
+        <div class="col-md-3">
+            <img src="{% static 'hotel/images/phong.jpg' %}" class="rounded mb-3" alt="phòng">
+            <h5>Phòng ốc gọn gàng</h5>
+            <p>Những căn phòng luôn gọn gàng sạch sẽ chờ đón ban.</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

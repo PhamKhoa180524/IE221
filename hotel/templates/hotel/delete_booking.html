@@ -1,0 +1,16 @@
+{% extends 'hotel/base.html' %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Xác nhận xóa đặt phòng</h1>
+        <p>Bạn có chắc chắn muốn xóa phòng này không?</p>
+        <p>Phòng: {{ booking.room.number }}</p>
+        <p>Check-in: {{ booking.check_in }}</p>
+        <p>Check-out: {{ booking.check_out }}</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+            <a href="{% url 'hotel:booking_history' %}" class="btn btn-secondary">Hủy</a>
+        </form>
+    </div>
+{% endblock %}

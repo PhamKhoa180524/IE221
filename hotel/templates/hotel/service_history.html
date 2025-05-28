@@ -1,0 +1,45 @@
+{% extends 'hotel/base.html' %}
+
+{% block title %}Quản lý đặt Dịch Vụ{% endblock title %}
+
+{% block body %}
+
+    <h1 class="text-center mb-4">Lịch sử Đặt Dịch Vụ</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        {% for booking in bookings %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                {% if booking.service.image_url %}
+                    <img src="{{ booking.service.image_url }}" class="card-img-top" alt="Dịch vụ {{ booking.service.service_name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ booking.service.service_name }}</h5>
+                    <p class="card-text">
+                        <strong>Loại dịch vụ:</strong> {{ booking.service.get_service_type_display }}<br>
+                        <strong>Số lượng:</strong> {{ booking.quantity }}<br>
+                        <strong>Thời gian đặt:</strong> {{ booking.time_call|date:"d-m-Y H:i" }}<br>
+                        <strong>Tổng tiền:</strong> {{ booking.get_total_price }} VND
+                    </p>
+                    <form action="{% url 'hotel:delete_service_booking' booking.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn hủy dịch vụ này không?');">
+                            Hủy dịch vụ
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

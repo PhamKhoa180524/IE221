@@ -1,0 +1,74 @@
+{% extends 'hotel/base.html' %}
+
+{% block title %}Đặt phòng{% endblock title %}
+
+{% block body %}
+
+    <h1 class="text-center mb-4">Danh sách phòng</h1>
+
+    <div class="container mb-4">
+        <form method="get" class="row justify-content-center">
+            <div class="col-md-4">
+                <label for="category" class="form-label">Lọc theo loại phòng:</label>
+                <select name="category" id="category" class="form-select" onchange="this.form.submit()">
+                    <option value="" {% if not request.GET.category %}selected{% endif %}>Tất cả</option>
+                    <option value="SGL" {% if request.GET.category == 'SGL' %}selected{% endif %}>Single</option>
+                    <option value="TWN" {% if request.GET.category == 'TWN' %}selected{% endif %}>Twin</option>
+                    <option value="DBL" {% if request.GET.category == 'DBL' %}selected{% endif %}>Double</option>
+                    <option value="TPL" {% if request.GET.category == 'TPL' %}selected{% endif %}>Triple</option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        {% for room in rooms %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                {% if room.image_url %}
+                    <img src="{{ room.image_url }}" class="card-img-top" alt="Phòng {{ room.number }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">Phòng {{ room.number }}</h5>
+                    <p>Loại: {{ room.get_category_display }}</p>
+                    <p>Giá: {{ room.price }} VND</p>
+
+                    <button class="btn btn-primary mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#form-{{ room.id }}" aria-expanded="false" aria-controls="form-{{ room.id }}">
+                        Đặt phòng
+                    </button>
+
+                    <div class="collapse" id="form-{{ room.id }}">
+                        <form action="{% url 'hotel:book_room' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="room_id" value="{{ room.id }}">
+                            
+                            <div class="mb-3">
+                                <label for="check_in_{{ room.id }}">Check-in</label>
+                                <input type="datetime-local" name="check_in" id="check_in_{{ room.id }}" required class="form-control">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="check_out_{{ room.id }}">Check-out</label>
+                                <input type="datetime-local" name="check_out" id="check_out_{{ room.id }}" required class="form-control">
+                            </div>
+                            
+                            <button type="submit" class="btn btn-success">Xác nhận đặt phòng</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <p class="text-center">Không có phòng nào để hiển thị.</p>
+        {% endfor %}
+    </div>
+
+{% endblock %}

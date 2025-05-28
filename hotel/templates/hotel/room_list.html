@@ -1,0 +1,48 @@
+{% extends 'hotel/base.html' %}
+
+{% block title %}Quản lý  phòng{% endblock title %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Danh sách phòng</h1>
+
+        <div class="row">
+            {% for room in rooms %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    {% if room.image_url %}
+                        <img src="{{ room.image_url }}" class="card-img-top" alt="Hình ảnh phòng {{ room.number }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">Phòng {{ room.number }}</h5>
+                        <p class="card-text">
+                            <strong>Loại phòng:</strong> {{ room.get_category_display }}<br>
+                            <strong>Số giường:</strong> {{ room.beds }} giường<br>
+                            <strong>Giá:</strong> {{ room.price }} VND / đêm
+                        </p>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'hotel:edit_room' room.id %}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-pencil-square"></i> Chỉnh sửa
+                            </a>
+                            <form action="{% url 'hotel:delete_room' room.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa phòng này không?');">
+                                    <i class="bi bi-trash"></i> Xóa
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center">Không có phòng nào để hiển thị.</p>
+            {% endfor %}
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="{% url 'hotel:add_room' %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Thêm phòng mới
+            </a>
+        </div>
+    </div>
+{% endblock %}

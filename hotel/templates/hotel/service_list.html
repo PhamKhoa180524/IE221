@@ -1,0 +1,47 @@
+{% extends 'hotel/base.html' %}
+
+{% block title %}Quản lý dịch vụ{% endblock title %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Danh sách dịch vụ</h1>
+
+        <div class="row">
+            {% for service in services %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    {% if service.image_url %}
+                        <img src="{{ service.image_url }}" class="card-img-top" alt="Hình ảnh dịch vụ {{ service.service_name }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ service.service_name }}</h5>
+                        <p class="card-text">
+                            <strong>Loại dịch vụ:</strong> {{ service.get_service_type_display }}<br>
+                            <strong>Giá:</strong> {{ service.price }} VND
+                        </p>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'hotel:edit_service' service.id  %}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-pencil-square"></i> Chỉnh sửa
+                            </a>
+                            <form action="{% url  'hotel:delete_service' service.id%}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa dịch vụ này không?');">
+                                    <i class="bi bi-trash"></i> Xóa
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center">Không có dịch vụ nào để hiển thị.</p>
+            {% endfor %}
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="{% url 'hotel:add_service' %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Thêm dịch vụ mới
+            </a>
+        </div>
+    </div>
+{% endblock %}

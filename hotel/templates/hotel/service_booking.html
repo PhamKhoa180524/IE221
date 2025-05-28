@@ -1,0 +1,58 @@
+{% extends 'hotel/base.html' %}
+
+{% block title %}Đặt dịch vụ{% endblock title %}
+
+{% block body %}
+
+    <h1 class="text-center mb-4">Danh sách dịch vụ</h1>
+
+    <div class="container mb-4">
+        <form method="get" class="row justify-content-center">
+            <div class="col-md-4">
+                <label for="category" class="form-label">Lọc theo loại dịch vụ:</label>
+                <select name="category" id="category" class="form-select" onchange="this.form.submit()">
+                    <option value="" {% if not request.GET.category %}selected{% endif %}>Tất cả</option>
+                    <option value="FOOD" {% if request.GET.category == 'FOOD' %}selected{% endif %}>Food</option>
+                    <option value="DRINK" {% if request.GET.category == 'DRINK' %}selected{% endif %}>Drink</option>
+                    <option value="SPA" {% if request.GET.category == 'SPA' %}selected{% endif %}>Spa</option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        {% for service in services %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                {% if service.image_url %}
+                    <img src="{{ service.image_url }}" class="card-img-top" alt="Dịch vụ {{ service.service_name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ service.service_name }}</h5>
+                    <p>Loại: {{ service.get_service_type_display }}</p>
+                    <p>Giá: {{ service.price }} VND</p>
+
+                    <form action="{% url 'hotel:service_booking' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="service_id" value="{{ service.id }}">
+                        <div class="mb-3">
+                            <label for="quantity_{{ service.id }}">Số lượng</label>
+                            <input type="number" name="quantity" min="1" value="1" required class="form-control" id="quantity_{{ service.id }}">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Đặt dịch vụ</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
