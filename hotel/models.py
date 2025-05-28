@@ -3,9 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-
 class BaseBooking(models.Model):
-    """Lớp trừu tượng dùng chung cho Booking và ServiceBooking."""
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     total_price = models.DecimalField(max_digits=12, decimal_places=0, blank=True, null=True)
 
@@ -24,7 +22,6 @@ class BaseBooking(models.Model):
         pass
 
 class Room(models.Model):
-    """Lớp biến diễn thông tin phòng khách sạn."""
     ROOM_CATEGORIES = (
         ('SGL', 'SINGLE'),
         ('TWN', 'TWIN'),
@@ -50,7 +47,6 @@ class Room(models.Model):
         self.price = price
 
 class Service(models.Model):
-    """Lớp biểu diễn thông tin dịch vụ khách sạn."""
     SERVICE_CATEGORIES = (
         ('FOOD', 'FOOD'),
         ('DRINK', 'DRINK'),
@@ -74,7 +70,6 @@ class Service(models.Model):
         self.price = price
 
 class Booking(BaseBooking):
-    """Lớp mô hình đại diện cho thông tin đặt phòng khách sạn kế thừa từ lớp BaseBooking"""
     id = models.AutoField(primary_key=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     check_in = models.DateTimeField()
@@ -109,7 +104,6 @@ class Booking(BaseBooking):
         return True
 
 class ServiceBooking(BaseBooking):
-    """Lớp biểu diễn cho đặt dịch vụ của khách hàng kế thừa từ lớp cha BaseBooking"""
     id = models.AutoField(primary_key=True)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
@@ -129,3 +123,47 @@ class ServiceBooking(BaseBooking):
 
     def get_service_name(self):
         return self.service.service_name
+
+class Cart(models.Model):
+    CART_TYPES = (
+        ('SERVICE', 'Service'),
+        ('ROOM', 'Room'),
+    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    type = models.CharField(max_length=10, choices=CART_TYPES)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, null=True, blank=True)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True, blank=True)
+    quantity = models.PositiveIntegerField(default=1)
+    check_in = models.DateTimeField(null=True, blank=True)
+    check_out = models.DateTimeField(null=True, blank=True)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        if self.type == 'SERVICE':
+            return f"Cart {self.user} - Service: {self.service.service_name} - {self.quantity}"
+        elif self.type == 'ROOM':
+            return f"Cart {self.user} - Room: {self.room.number} - {self.check_in} to {self.check_out}"
+
+    def calculate_total_price(self):
+        if self.type == 'SERVICE':
+            return self.service.price * self.quantity
+        elif self.type == 'ROOM':
+            duration = (self.check_out - self.check_in).days
+            if duration <= 0:
+                duration = 1
+            return self.room.price * duration
+
+class Profile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=15, blank=True)
+    address = models.TextField(blank=True)
+    birthdate = models.DateField(null=True, blank=True)
+    avatar = models.URLField(max_length=200, blank=True)
+    loyalty_points = models.IntegerField(default=0) 
+    
+    def __str__(self):
+        return f"Profile of {self.user.username}"
+
+    def add_loyalty_points(self, amount):
+        self.loyalty_points = int(self.loyalty_points + amount)
+        self.save(update_fields=['loyalty_points'])

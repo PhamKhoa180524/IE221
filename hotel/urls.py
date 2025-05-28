@@ -1,19 +1,11 @@
 from django.urls import path
 from . import views
+from .views import CartListView, AddToCartView, RemoveFromCartView
 
 app_name = 'hotel' 
 
 urlpatterns = [
     path('', views.HomeView.as_view(), name='home'), 
-    path('rooms/', views.RoomListView.as_view(), name='room_list'),
-    path('rooms/add/', views.RoomCreateView.as_view(), name='add_room'),
-    path('rooms/edit/<int:pk>/', views.RoomUpdateView.as_view(), name='edit_room'),
-    path('rooms/delete/<int:pk>/', views.RoomDeleteView.as_view(), name='delete_room'),
-
-    path('services/', views.ServiceListView.as_view(), name='service_list'),
-    path('services/add/', views.ServiceCreateView.as_view(), name='add_service'),
-    path('services/edit/<int:pk>/', views.ServiceUpdateView.as_view(), name='edit_service'),
-    path('services/delete/<int:pk>/', views.ServiceDeleteView.as_view(), name='delete_service'),
 
     path('booking/', views.BookingCreateView.as_view(), name='book_room'),
     path('booking/history/', views.BookingListView.as_view(), name='booking_history'),
@@ -26,4 +18,12 @@ urlpatterns = [
     path('login/', views.LoginView.as_view(), name='login'),
     path('register/', views.RegisterView.as_view(), name='register'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
+
+    path('cart/', CartListView.as_view(), name='cart'),
+    path('cart/add/', AddToCartView.as_view(), name='add_to_cart'),
+    path('cart/remove/', RemoveFromCartView.as_view(), name='remove_from_cart'),
+    path('cart/checkout/', views.CheckoutView.as_view(), name='checkout'),
+
+    path('profile/', views.ProfileView.as_view(), name='profile'),
+    path('dashboard/', views.UserDashboardView.as_view(), name='dashboard'),
 ]

@@ -1,23 +1,20 @@
 from django import forms
-from .models import Room, Service,Booking,ServiceBooking
+from .models import Room, Service, Booking, ServiceBooking, Profile
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.exceptions import ValidationError
 
 class RoomForm(forms.ModelForm):
-    """Form cho phép thêm hoặc chỉnh sửa thông tin phòng khách sạn."""
     class Meta:
         model = Room
-        fields = ['number', 'category', 'beds', 'price', 'image_url']  # Các trường trong form
+        fields = ['number', 'category', 'beds', 'price', 'image_url']
 
 class ServiceForm(forms.ModelForm):
-    """Form để thêm hoặc chỉnh sửa thông tin dịch vụ khách sạn."""
     class Meta:
         model = Service
         fields = ['service_name', 'service_type', 'price','image_url' ]
         
 class BookingForm(forms.ModelForm):
-    """Form để tạo đặt phòng khách sạn."""
     class Meta:
         model = Booking
         fields = ['check_in', 'check_out']
@@ -26,7 +23,6 @@ class BookingForm(forms.ModelForm):
             'check_out': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
     def clean(self):
-        
         cleaned_data = super().clean()
         check_in = cleaned_data.get('check_in')
         check_out = cleaned_data.get('check_out')
@@ -35,7 +31,6 @@ class BookingForm(forms.ModelForm):
             raise ValidationError("Ngày Check-in phải trước ngày Check-out.")
 
 class ServiceBookingForm(forms.ModelForm):
-    """Form để tạo đặt dịch vụ."""
     class Meta:
         model = ServiceBooking
         fields = ['quantity']
@@ -48,7 +43,6 @@ class ServiceBookingForm(forms.ModelForm):
         }
         
 class LoginForm(AuthenticationForm):
-    """Form xác thực thông tin đăng nhập của người dùng."""
     username = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control',
         'placeholder': 'Tên đăng nhập',
@@ -59,7 +53,6 @@ class LoginForm(AuthenticationForm):
     }))
 
 class RegisterForm(UserCreationForm):
-    """Form để tạo tài khoản người dùng mới."""
     username = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control',
         'placeholder': 'Tên đăng nhập',
@@ -87,5 +80,15 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2']
-        
-    
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['phone', 'address', 'birthdate', 'avatar']
+        widgets = {
+            'birthdate': forms.DateInput(attrs={'type': 'date'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Số điện thoại'}),
+            'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Địa chỉ'}),
+            'avatar': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'URL ảnh đại diện'})
+        }
+

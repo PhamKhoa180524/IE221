@@ -1,0 +1,102 @@
+{% extends 'hotel/base.html' %}
+
+{% block title %}Giỏ hàng{% endblock title %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h4 class="card-title mb-0">Giỏ hàng của bạn</h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post" action="{% url 'hotel:checkout' %}">
+                        {% csrf_token %}
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Loại</th>
+                                        <th scope="col">Tên</th>
+                                        <th scope="col">Số lượng</th>
+                                        <th scope="col">Check-in</th>
+                                        <th scope="col">Check-out</th>
+                                        <th scope="col" class="text-end">Giá</th>
+                                        <th scope="col" class="text-end">Tổng</th>
+                                        <th scope="col" class="text-center">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in cart_items %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge {% if item.type == 'ROOM' %}bg-primary{% else %}bg-success{% endif %}">
+                                                {{ item.type }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if item.type == 'SERVICE' %}
+                                                {{ item.service.service_name }}
+                                            {% elif item.type == 'ROOM' %}
+                                                Phòng {{ item.room.number }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>{{ item.check_in|date:"d/m/Y H:i"|default:"-" }}</td>
+                                        <td>{{ item.check_out|date:"d/m/Y H:i"|default:"-" }}</td>
+                                        <td class="text-end">
+                                            {% if item.type == 'SERVICE' %}
+                                                {{ item.service.price|floatformat:"0g" }} VND
+                                            {% elif item.type == 'ROOM' %}
+                                                {{ item.room.price|floatformat:"0g" }} VND
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">{{ item.calculate_total_price|floatformat:"0g" }} VND</td>
+                                        <td class="text-center">
+                                            <form method="post" action="{% url 'hotel:remove_from_cart' %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="cart_item_id" value="{{ item.id }}">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    <i class="fas fa-trash"></i> Xóa
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4">
+                                            <p class="text-muted mb-0">Giỏ hàng trống</p>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {% if cart_items %}
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <a href="{% url 'hotel:home' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Tiếp tục mua hàng
+                            </a>
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fas fa-check"></i> Thanh toán
+                            </button>
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
